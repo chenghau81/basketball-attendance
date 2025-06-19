@@ -37,13 +37,13 @@ This guide will walk you through deploying the Basketball Attendance application
    - Select your repository
    - Name: "basketball-attendance-api"
    - Runtime: Node
-   - Build Command: `npm install && npm install --prefix server`
-   - Start Command: `npm start`
+   - Build Command: `npm run render-build`
+   - Start Command: `npm run render-start`
 4. Add Environment Variables:
    - `NODE_ENV`: `production`
    - `PORT`: `10000` (Render will override this but it's good to set it)
-   - `MONGODB_URI`: Your MongoDB Atlas connection string
-   - `CLIENT_URL`: Leave blank for now (we'll update after deploying frontend)
+   - `MONGODB_URI`: Your MongoDB Atlas connection string (must be set correctly)
+   - `CLIENT_URL`: Your frontend URL (after deploying to Netlify)
 5. Choose Free plan and click "Create Web Service"
 6. Note your backend URL (e.g., `https://basketball-attendance-api.onrender.com`)
 
