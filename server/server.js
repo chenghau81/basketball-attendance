@@ -44,11 +44,42 @@ app.use('/api/players', playerRoutes);
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {
   // Set static folder
-  app.use(express.static(path.join(__dirname, '../client/build')));
+  const clientBuildPath = path.join(__dirname, '../client/build');
+  console.log('Looking for client build at:', clientBuildPath);
+  
+  try {
+    // Check if the directory exists
+    const stats = require('fs').statSync(clientBuildPath);
+    if (!stats.isDirectory()) {
+      console.error('Build path exists but is not a directory');
+    } else {
+      console.log('Client build directory found');
+      // List files in the build directory
+      const files = require('fs').readdirSync(clientBuildPath);
+      console.log('Files in build directory:', files);
+    }
+  } catch (err) {
+    console.error('Error checking build directory:', err.message);
+  }
+
+  // Serve static files
+  app.use(express.static(clientBuildPath));
   
   // Any route that doesn't match API will go to index.html
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+    const indexPath = path.join(clientBuildPath, 'index.html');
+    console.log('Trying to serve:', indexPath);
+    try {
+      if (require('fs').existsSync(indexPath)) {
+        res.sendFile(indexPath);
+      } else {
+        console.error('index.html not found');
+        res.status(404).send('Build files not found. Make sure the client build completed successfully.');
+      }
+    } catch (err) {
+      console.error('Error serving index.html:', err.message);
+      res.status(500).send('Server error when trying to serve the application');
+    }
   });
 } else {
   // Root route for development
