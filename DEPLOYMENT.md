@@ -37,7 +37,7 @@ This guide will walk you through deploying the Basketball Attendance application
    - Select your repository
    - Name: "basketball-attendance-api"
    - Runtime: Node
-   - Build Command: `npm install`
+   - Build Command: `npm install && npm install --prefix server`
    - Start Command: `npm start`
 4. Add Environment Variables:
    - `NODE_ENV`: `production`
@@ -88,6 +88,8 @@ This guide will walk you through deploying the Basketball Attendance application
 - **Backend API Errors**:
   - Check Render logs for specific error messages
   - Verify environment variables are set correctly
+  - If you see "Module not found" errors, try manually rebuilding the service in Render dashboard
+  - Ensure dependencies are being installed correctly by checking the build logs
   
 - **Frontend Not Connecting to Backend**:
   - Check that REACT_APP_API_URL is set correctly
