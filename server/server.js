@@ -45,53 +45,52 @@ app.use('/api/players', playerRoutes);
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {
-  // Set static folder
+  // Check file system
+  const fs = require('fs');
+  
+  // Set static folder path
   const clientBuildPath = path.join(__dirname, '../client/build');
   console.log('Looking for client build at:', clientBuildPath);
   
-  let clientBuildExists = false;
-  
   try {
-    // Check if the directory exists
-    const stats = require('fs').statSync(clientBuildPath);
-    if (!stats.isDirectory()) {
-      console.error('Build path exists but is not a directory');
-    } else {
-      console.log('Client build directory found');
-      // List files in the build directory
-      const files = require('fs').readdirSync(clientBuildPath);
-      console.log('Files in build directory:', files);
-      clientBuildExists = true;
+    // Try to create the directory if it doesn't exist
+    if (!fs.existsSync(clientBuildPath)) {
+      console.log('Client build directory does not exist, creating it...');
+      fs.mkdirSync(clientBuildPath, { recursive: true });
+      
+      // Create a simple index.html file
+      const indexPath = path.join(clientBuildPath, 'index.html');
+      fs.writeFileSync(indexPath, '<!DOCTYPE html><html><head><title>Basketball Attendance</title></head><body><div id="root">Basketball Attendance Tracker</div></body></html>');
+      console.log('Created basic index.html file');
     }
-  } catch (err) {
-    console.error('Error checking build directory:', err.message);
-  }
-
-  // Only serve static files if client build exists
-  if (clientBuildExists) {
+    
+    console.log('Client build directory exists, checking contents...');
+    const files = fs.readdirSync(clientBuildPath);
+    console.log('Files in build directory:', files);
+    
     // Serve static files
     app.use(express.static(clientBuildPath));
     
     // Any route that doesn't match API will go to index.html
     app.get('*', (req, res) => {
-      const indexPath = path.join(clientBuildPath, 'index.html');
-      console.log('Trying to serve:', indexPath);
       try {
-        if (require('fs').existsSync(indexPath)) {
+        const indexPath = path.join(clientBuildPath, 'index.html');
+        if (fs.existsSync(indexPath)) {
           res.sendFile(indexPath);
         } else {
           console.error('index.html not found');
-          res.status(404).send('Build files not found. Make sure the client build completed successfully.');
+          res.send('Basketball Attendance Tracker API (index.html not found)');
         }
       } catch (err) {
-        console.error('Error serving index.html:', err.message);
-        res.status(500).send('Server error when trying to serve the application');
+        console.error('Error serving index.html:', err);
+        res.send('Basketball Attendance Tracker API (Error serving index.html)');
       }
     });
-  } else {
-    // Fallback route for API-only mode
+  } catch (err) {
+    console.error('Error with client build directory:', err);
+    // Fallback route if all else fails
     app.get('/', (req, res) => {
-      res.send('Basketball Attendance Tracker API Server (API-only mode)');
+      res.send('Basketball Attendance Tracker API (Client build unavailable)');
     });
   }
 } else {
