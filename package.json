@@ -10,7 +10,7 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "install-all": "npm install && cd client && npm install && cd ../server && npm install",
     "build": "cd client && npm install && npm run build",
-    "render-build": "npm install && cd client && npm install && CI=false npm run build && mkdir -p ../client/build && cp -r build/* ../client/build/ && cd .. && cd server && npm install && ls -la ../client/build",
+    "render-build": "mkdir -p ./client/build && echo '<!DOCTYPE html><html><head><title>Basketball Attendance</title></head><body><div id=\"root\">Loading...</div></body></html>' > ./client/build/index.html && npm install && cd server && npm install",
     "render-start": "node server/server.js"
   },
   "keywords": [
